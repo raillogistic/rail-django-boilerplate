@@ -11,17 +11,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
     curl \
+    git \
  && rm -rf /var/lib/apt/lists/*
 
 # Create app directory
 WORKDIR /app
 
-# Copy only requirements first to leverage Docker layer caching
-COPY django-graphql-boilerplate/requirements/production.txt /tmp/requirements.txt
-RUN pip install --upgrade pip && pip install -r /tmp/requirements.txt
+# Copy requirements directory first to leverage Docker layer caching
+COPY django-graphql-boilerplate/requirements/ /tmp/requirements/
+RUN pip install --upgrade pip && pip install -r /tmp/requirements/production.txt
 
 # Copy project content (build context points to django-graphql-boilerplate parent)
 COPY . /app
+
+# Use local library (monorepo) without pip installing it
+ENV PYTHONPATH=/app/rail-django-graphql:${PYTHONPATH}
 
 # Ensure correct working directory for manage.py
 WORKDIR /app/django-graphql-boilerplate
