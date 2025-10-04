@@ -1,0 +1,53 @@
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Environments
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+!deploy/.env.production.example
+!.env.prod
+
+# Django
+db.sqlite3
+local_settings.py
+
+# Tests and coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs and cache
+*.log
+logs/
+.cache/
+
+# Static and media
+static/
+media/
+
+# Node
+node_modules/
+
+# Docker/Nginx certs
+deploy/nginx/certs/

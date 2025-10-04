@@ -44,6 +44,14 @@ services:
       - db
       - redis
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
     ports:
       - "8000:8000"
     volumes:
@@ -55,6 +63,11 @@ services:
   nginx:
     image: nginx:1.25-alpine
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     depends_on:
       - web
     ports:
@@ -70,6 +83,11 @@ services:
   prometheus:
     image: prom/prometheus:latest
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     ports:
       - "9090:9090"
     volumes:
@@ -79,6 +97,11 @@ services:
   grafana:
     image: grafana/grafana:latest
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD:-admin}
     ports:
@@ -94,5 +117,25 @@ volumes:
   redis_data:
   static_data:
   media_data:
+  backups_data:
   grafana_data:
   prometheus_data:
+  backup:
+    image: alpine:3.19
+    restart: unless-stopped
+    depends_on:
+      - db
+      - web
+    environment:
+      DB_BACKUPS_DIR: ${DB_BACKUPS_DIR:-/backups/db}
+      MEDIA_BACKUPS_DIR: ${MEDIA_BACKUPS_DIR:-/backups/media}
+      DB_BACKUP_CRON: ${DB_BACKUP_CRON:-0 2 * * *}
+      MEDIA_BACKUP_CRON: ${MEDIA_BACKUP_CRON:-0 3 * * *}
+      DATABASE_URL: ${DATABASE_URL}
+      MEDIA_ROOT: ${MEDIA_ROOT:-/app/media}
+    volumes:
+      - backups_data:/backups
+      - media_data:/app/media:ro
+      - ./scripts/backup.sh:/usr/local/bin/backup.sh:ro
+      - ./docker/backup-entrypoint.sh:/usr/local/bin/backup-entrypoint.sh:ro
+    command: ["/usr/local/bin/backup-entrypoint.sh"]
