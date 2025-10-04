@@ -52,8 +52,7 @@ services:
         reservations:
           cpus: '0.5'
           memory: 256M
-    ports:
-      - "8000:8000"
+    # No public port mapping; behind Nginx reverse proxy
     volumes:
       - static_data:/app/static
       - media_data:/app/media

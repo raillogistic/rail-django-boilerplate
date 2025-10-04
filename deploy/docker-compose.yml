@@ -33,8 +33,7 @@ services:
     depends_on:
       - db
       - redis
-    ports:
-      - "8000:8000"
+    # Do not publish Django directly; access via Nginx
 
   nginx:
     image: nginx:1.25-alpine

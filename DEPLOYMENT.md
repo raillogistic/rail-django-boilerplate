@@ -61,7 +61,7 @@ Health, Readiness, and Logging (Phase 4)
   - `POST /graphql/` is proxied by Nginx to the ASGI app.
   - GraphiQL UI is controlled via `RAIL_DJANGO_GRAPHQL.SECURITY.ENABLE_GRAPHIQL` (disabled by default in production).
 - Container healthcheck:
-  - The app container pings `http://localhost:8000/health/check/` every 30s.
+  - The app container pings `http://localhost:8000/health/check/` internally every 30s (not exposed to host).
   - Orchestrators (Docker, Kubernetes) can rely on this for liveness.
 - Logging:
   - Application logs stream to stdout; set `LOG_LEVEL` (default `INFO`).
