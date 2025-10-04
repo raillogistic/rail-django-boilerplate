@@ -34,9 +34,9 @@ ENV ASGI_WORKERS=3 \
     ASGI_TIMEOUT=120 \
     ASGI_BIND=0.0.0.0:8000
 
-# Health check script location (optional)
+# Health check: use lightweight JSON endpoint
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 \
- CMD curl --fail http://localhost:8000/health/ || exit 1
+ CMD curl --fail http://localhost:8000/health/check/ || exit 1
 
 # Expose app port
 EXPOSE 8000

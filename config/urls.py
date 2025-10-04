@@ -15,10 +15,12 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
     
     # GraphQL endpoint (library view)
-    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path('graphql/', csrf_exempt(GraphQLView.as_view(
+        graphiql=settings.RAIL_DJANGO_GRAPHQL['SECURITY'].get('ENABLE_GRAPHIQL', False)
+    ))),
     
     # Health check endpoints
-    path('health/', include(health_urlpatterns)),
+    path('', include(health_urlpatterns)),
     
     # App URLs
     path('users/', include('apps.users.urls')),

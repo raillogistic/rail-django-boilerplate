@@ -49,3 +49,21 @@ Restore procedures:
 
 Retention policy:
 - DB backups older than `DB_BACKUP_RETENTION_DAYS` are pruned automatically after each backup.
+
+Health, Readiness, and Logging (Phase 4)
+----------------------------------------
+
+- Health endpoints provided by the app:
+  - `GET /health/check/` returns a minimal JSON for liveness.
+  - `GET /health/api/` exposes aggregated health information for probes.
+  - `GET /health/` serves a simple HTML dashboard page.
+- GraphQL:
+  - `POST /graphql/` is proxied by Nginx to the ASGI app.
+  - GraphiQL UI is controlled via `RAIL_DJANGO_GRAPHQL.SECURITY.ENABLE_GRAPHIQL` (disabled by default in production).
+- Container healthcheck:
+  - The app container pings `http://localhost:8000/health/check/` every 30s.
+  - Orchestrators (Docker, Kubernetes) can rely on this for liveness.
+- Logging:
+  - Application logs stream to stdout; set `LOG_LEVEL` (default `INFO`).
+  - Nginx logs are available via container stdout.
+  - Consider centralizing logs to an aggregator in production environments.
