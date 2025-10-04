@@ -3,6 +3,17 @@ set -e
 
 echo "[backup] initializing backup service..."
 
+# Install required tools (pg_dump, gzip, rsync, curl) if missing
+if ! command -v pg_dump >/dev/null 2>&1 || ! command -v rsync >/dev/null 2>&1; then
+  echo "[backup] installing required packages..."
+  # Alpine package manager
+  if command -v apk >/dev/null 2>&1; then
+    apk add --no-cache postgresql-client rsync curl coreutils findutils busybox-extras
+  else
+    echo "[backup] WARNING: apk not found; ensure pg_dump and rsync are available in image"
+  fi
+fi
+
 # Prepare backup directories
 mkdir -p /backups/db /backups/media
 
