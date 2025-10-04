@@ -1,0 +1,9 @@
+# Production requirements
+-r base.txt
+
+gunicorn
+psycopg2-binary
+redis
+django-redis
+\
+daphne

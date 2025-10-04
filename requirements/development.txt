@@ -1,0 +1,11 @@
+# Development requirements
+-r base.txt
+
+ipython
+black
+flake8
+isort
+pytest
+pytest-django
+\
+daphne
