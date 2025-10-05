@@ -142,128 +142,43 @@ GRAPHENE = {
 # Rail Django GraphQL Configuration (env-driven toggles)
 
 RAIL_DJANGO_GRAPHQL = {
-    "DEFAULT_SCHEMA": "default",
-    "ENABLE_GRAPHIQL": True,
-    "AUTHENTICATION_REQUIRED": False,
-    # Schema settings
-    "SCHEMA_SETTINGS": {
-        "excluded_apps": ["admin", "auth"],
-        "enable_introspection": True,
-        "auto_camelcase": True,
+    "SCHEMAS": {
+        "default": {
+            "MODELS": [
+                # 'apps.users.models.User',
+                # 'apps.blog.models.Post',
+                "apps.blog.models.Category",
+                "apps.blog.models.Tag",
+                "apps.blog.models.Comment",
+            ],
+            "SCHEMA_OVERRIDES": {
+                "ENABLE_FILTERS": False,
+                "SCHEMA_SETTINGS": {
+                    "excluded_models": [
+                        "apps.users.models.User",
+                    ]
+                },
+            },
+            "ENABLE_MUTATIONS": True,
+            "ENABLE_FILTERS": False,
+            "ENABLE_PAGINATION": True,
+            "ENABLE_SUBSCRIPTIONS": False,
+            "MAX_PAGE_SIZE": 100,
+            "DEFAULT_PAGE_SIZE": 20,
+        }
     },
-    # Query settings
-    "QUERY_SETTINGS": {
-        "ENABLE_FILTERING": True,
-        "DEFAULT_PAGE_SIZE": 25,
-        "MAX_QUERY_DEPTH": 8,
+    "SECURITY": {
+        "ENABLE_INTROSPECTION": env.bool("ENABLE_INTROSPECTION", default=True),
+        "ENABLE_GRAPHIQL": env.bool("ENABLE_GRAPHIQL", default=True),
+        "MAX_QUERY_DEPTH": env.int("GRAPHQL_MAX_QUERY_DEPTH", default=10),
+        "MAX_QUERY_COMPLEXITY": env.int("GRAPHQL_MAX_QUERY_COMPLEXITY", default=1000),
     },
-    # Security settings
-    "SECURITY_SETTINGS": {
-        "ENABLE_RATE_LIMITING": True,
-        "RATE_LIMIT_PER_MINUTE": 100,
+    "PERFORMANCE": {
+        "ENABLE_CACHING": env.bool("GRAPHQL_ENABLE_CACHING", default=True),
+        "CACHE_TIMEOUT": env.int("GRAPHQL_CACHE_TIMEOUT", default=300),
+        "ENABLE_DATALOADER": env.bool("GRAPHQL_ENABLE_DATALOADER", default=True),
     },
 }
-# RAIL_DJANGO_GRAPHQL = {
-#     "SCHEMAS": {
-#         "default": {
-#             "MODELS": [
-#                 # 'apps.users.models.User',
-#                 # 'apps.blog.models.Post',
-#                 "apps.blog.models.Category",
-#                 "apps.blog.models.Tag",
-#                 "apps.blog.models.Comment",
-#             ],
-#             "SCHEMA_OVERRIDES": {
-#                 "ENABLE_FILTERS": False,
-#                 "SCHEMA_SETTINGS": {
-#                     "excluded_models": [
-#                         "apps.users.models.User",
-#                     ]
-#                 },
-#             },
-#             "ENABLE_MUTATIONS": True,
-#             "ENABLE_FILTERS": False,
-#             "ENABLE_PAGINATION": True,
-#             "ENABLE_SUBSCRIPTIONS": False,
-#             "MAX_PAGE_SIZE": 100,
-#             "DEFAULT_PAGE_SIZE": 20,
-#         }
-#     },
-#     "SECURITY": {
-#         "ENABLE_INTROSPECTION": env.bool("ENABLE_INTROSPECTION", default=True),
-#         "ENABLE_GRAPHIQL": env.bool("ENABLE_GRAPHIQL", default=True),
-#         "MAX_QUERY_DEPTH": env.int("GRAPHQL_MAX_QUERY_DEPTH", default=10),
-#         "MAX_QUERY_COMPLEXITY": env.int("GRAPHQL_MAX_QUERY_COMPLEXITY", default=1000),
-#     },
-#     "PERFORMANCE": {
-#         "ENABLE_CACHING": env.bool("GRAPHQL_ENABLE_CACHING", default=True),
-#         "CACHE_TIMEOUT": env.int("GRAPHQL_CACHE_TIMEOUT", default=300),
-#         "ENABLE_DATALOADER": env.bool("GRAPHQL_ENABLE_DATALOADER", default=True),
-#     },
-#     "SCHEMA_OVERRIDES": {
-#         "default": {
-#             "SCHEMA_SETTINGS": {
-#                 "excluded_apps": [
-#                     "Post"
-#                     # "apps.blog",  # exclude entire blog app
-#                 ],
-#                 "excluded_models": [
-#                     "app.Post"  # "users.User",  # exclude via app_label.Model
-#                     "Tag",  # exclude by model class name
-#                     "apps.blog.models.Comment",  # fully-qualified model path also supported
-#                 ],
-#                 "enable_pagination": True,
-#                 "auto_refresh_on_model_change": True,
-#                 "enable_introspection": True,
-#                 "auto_camelcase": False,
-#             },
-#             "TYPE_SETTINGS": {
-#                 "EXCLUDE_FIELDS": {
-#                     "User": ["password", "last_login"],
-#                     "Post": ["secret_token"],
-#                 },
-#                 "ENABLE_AUTO_CAMEL_CASE": True,  # alias for auto_camelcase
-#                 "GENERATE_FILTERS": True,
-#                 "GENERATE_DESCRIPTIONS": True,
-#             },
-#             "QUERY_SETTINGS": {
-#                 "ENABLE_FILTERS": True,
-#                 "ENABLE_PAGINATION": True,
-#                 "DEFAULT_PAGE_SIZE": 50,
-#                 "MAX_PAGE_SIZE": 200,
-#                 "GENERATE_FILTERS": True,
-#                 "GENERATE_ORDERING": True,
-#                 "USE_RELAY": False,
-#                 "ADDITIONAL_LOOKUP_FIELDS": {
-#                     "Post": ["slug"],
-#                     "User": ["uuid"],
-#                 },
-#             },
-#             "MUTATION_SETTINGS": {
-#                 "enable_nested_relations": True,
-#                 "nested_relations_config": {
-#                     "Post": True,  # enable nested for Post relationships
-#                 },
-#                 "nested_field_config": {
-#                     "Post": {"tags": True},  # allow nested operations on Post.tags
-#                 },
-#                 "generate_bulk": True,
-#                 "bulk_batch_size": 100,
-#                 "enable_method_mutations": False,
-#                 "required_update_fields": {
-#                     "User": ["email"],
-#                 },
-#                 "generate_create": False,
-#                 "generate_update": True,
-#                 "generate_delete": True,
-#                 "enable_create": True,  # aliases kept for compatibility
-#                 "enable_update": True,
-#                 "enable_delete": True,
-#                 "enable_bulk_operations": True,
-#             },
-#         },
-#     },
-# }
 
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = env.list(

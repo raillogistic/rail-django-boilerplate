@@ -1,20 +1,21 @@
 from rail_django_graphql.core.registry import schema_registry
 
 # Open blog schema
-# schema_registry.register_schema(
-#     name="blog",
-#     description="Blog content API",
-#     models=["blog.Post", "blog.Comment"],
-#     settings={
-#         "authentication_required": False,
-#         "enable_graphiql": True,
-#         "QUERY_SETTINGS": {
-#             "ENABLE_FILTERING": False,
-#         },
-#         # "excluded_models": ["User"],
-#     },
-#     enabled=True,
-# )
+schema_registry.register_schema(
+    name="blog",
+    description="Blog content API",
+    models=[
+        "blog.Post",
+    ],
+    settings={
+        "authentication_required": False,
+        "enable_graphiql": True,
+        "QUERY_SETTINGS": {
+            "ENABLE_FILTERING": False,
+        },
+    },
+    enabled=True,
+)
 
 
 # # Closed authentication schema
