@@ -1,6 +1,6 @@
 # Django GraphQL Boilerplate
 
-Ready-to-use Django project that integrates the `rail-django-graphql` library installed directly from GitHub.
+Ready-to-use Django project integrating the `rail-django-graphql` library with single and multi-schema routing.
 
 ## Features
 
@@ -9,6 +9,7 @@ Ready-to-use Django project that integrates the `rail-django-graphql` library in
 - Automatic schema generation using `rail-django-graphql`
 - Example apps: `users` and `blog` with minimal models
  - Configurable security and performance via `RAIL_DJANGO_GRAPHQL`
+ - Multi-schema endpoints for per-schema APIs and Playground
 
 ## Quick Start
 
@@ -32,7 +33,10 @@ Ready-to-use Django project that integrates the `rail-django-graphql` library in
 
 4. Visit the app:
    - Home: http://127.0.0.1:8000/
-- GraphQL: http://127.0.0.1:8000/graphql/
+    - Single GraphQL: http://127.0.0.1:8000/graphql/
+    - Multi-schema GraphQL: http://127.0.0.1:8000/graphql/<schema_name>/
+    - Schemas list: http://127.0.0.1:8000/schemas/
+    - Playground per schema: http://127.0.0.1:8000/playground/<schema_name>/
    - GraphiQL is enabled in development.
 
 ## Configuration
@@ -44,7 +48,12 @@ Ready-to-use Django project that integrates the `rail-django-graphql` library in
 
 ## Documentation
 
-See `docs/` for installation, configuration, and usage guides. To serve docs locally:
+Documentation has been reorganized:
+- Library usage guides: `rail-django-graphql/docs/usage/`
+- Views and registry reference: `rail-django-graphql/docs/reference/views-and-registry.md`
+- Project-level docs remain in `docs/`
+
+To serve project docs locally:
 
 ```bash
 pip install mkdocs mkdocs-material

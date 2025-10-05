@@ -117,7 +117,8 @@ USE_TZ = True
 """Static and media paths via environment"""
 STATIC_URL = env('STATIC_URL', default='/static/')
 STATIC_ROOT = Path(env('STATIC_ROOT', default=str(BASE_DIR / 'staticfiles')))
-STATICFILES_DIRS = [BASE_DIR / 'static']
+_project_static = BASE_DIR / 'static'
+STATICFILES_DIRS = [_project_static] if _project_static.exists() else []
 
 MEDIA_URL = env('MEDIA_URL', default='/media/')
 MEDIA_ROOT = Path(env('MEDIA_ROOT', default=str(BASE_DIR / 'media')))
@@ -141,13 +142,20 @@ GRAPHENE = {
 RAIL_DJANGO_GRAPHQL = {
     'SCHEMAS': {
         'default': {
-            'MODELS': [
-                'apps.users.models.User',
-                'apps.blog.models.Post',
+            'MODELS': [ 
+                # 'apps.users.models.User',
+                # 'apps.blog.models.Post',
                 'apps.blog.models.Category',
                 'apps.blog.models.Tag',
                 'apps.blog.models.Comment',
             ],
+            "SCHEMA_OVERRIDES":{
+                "SCHEMA_SETTINGS":{
+                    "excluded_models":[
+                        "apps.users.models.User",
+                    ]
+                }
+            },
             'ENABLE_MUTATIONS': True,
             'ENABLE_FILTERS': True,
             'ENABLE_PAGINATION': True,
@@ -166,6 +174,72 @@ RAIL_DJANGO_GRAPHQL = {
         'ENABLE_CACHING': env.bool('GRAPHQL_ENABLE_CACHING', default=True),
         'CACHE_TIMEOUT': env.int('GRAPHQL_CACHE_TIMEOUT', default=300),
         'ENABLE_DATALOADER': env.bool('GRAPHQL_ENABLE_DATALOADER', default=True),
+    },
+    
+    'SCHEMA_OVERRIDES': {
+        'default': {
+            'SCHEMA_SETTINGS': {
+                'excluded_apps': [
+                    'django.contrib.admin',  # exclude admin
+                    'apps.blog',             # exclude entire blog app
+                ],
+                'excluded_models': [
+                    # 'users.User',            # exclude via app_label.Model
+                    'Tag',                   # exclude by model class name
+                    'apps.blog.models.Comment',  # fully-qualified model path also supported
+                ],
+                'enable_pagination': True,
+                'auto_refresh_on_model_change': True,
+                'enable_introspection': True,
+                'auto_camelcase': False,
+            },
+
+            'TYPE_SETTINGS': {
+                'EXCLUDE_FIELDS': {
+                    'User': ['password', 'last_login'],
+                    'Post': ['secret_token'],
+                },
+                'ENABLE_AUTO_CAMEL_CASE': True,   # alias for auto_camelcase
+                'GENERATE_FILTERS': True,
+                'GENERATE_DESCRIPTIONS': True,
+            },
+
+            'QUERY_SETTINGS': {
+                'ENABLE_PAGINATION': True,
+                'DEFAULT_PAGE_SIZE': 50,
+                'MAX_PAGE_SIZE': 200,
+                'GENERATE_FILTERS': True,
+                'GENERATE_ORDERING': True,
+                'USE_RELAY': False,
+                'ADDITIONAL_LOOKUP_FIELDS': {
+                    'Post': ['slug'],
+                    'User': ['uuid'],
+                },
+            },
+
+            'MUTATION_SETTINGS': {
+                'enable_nested_relations': True,
+                'nested_relations_config': {
+                    'Post': True,     # enable nested for Post relationships
+                },
+                'nested_field_config': {
+                    'Post': {'tags': True},  # allow nested operations on Post.tags
+                },
+                'generate_bulk': True,
+                'bulk_batch_size': 100,
+                'enable_method_mutations': False,
+                'required_update_fields': {
+                    'User': ['email'],
+                },
+                'generate_create': True,
+                'generate_update': True,
+                'generate_delete': True,
+                'enable_create': True,       # aliases kept for compatibility
+                'enable_update': True,
+                'enable_delete': True,
+                'enable_bulk_operations': True,
+            },
+        }
     }
 }
 
