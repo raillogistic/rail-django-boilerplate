@@ -25,6 +25,8 @@ Ready-to-use Django project integrating the `rail-django-graphql` library with s
    pip install -r requirements\development.txt
    ```
 
+   Note: The `rail-django-graphql` package is now installed as an external dependency from PyPI.
+
 3. Apply migrations and run the server:
    ```powershell
    python manage.py migrate

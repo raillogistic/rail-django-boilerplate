@@ -15,8 +15,8 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, project_root)
 
 # Add the rail_django_graphql package to the path
-rail_graphql_path = os.path.join(project_root, '..', 'rail-django-graphql')
-sys.path.insert(0, rail_graphql_path)
+# rail_graphql_path = os.path.join(project_root, '..', 'rail-django-graphql')
+# sys.path.insert(0, rail_graphql_path)
 
 # Set up Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.development')

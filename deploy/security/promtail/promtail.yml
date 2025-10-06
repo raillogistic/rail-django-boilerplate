@@ -1,0 +1,45 @@
+﻿server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: django-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: django
+          __path__: /var/log/django/*.log
+
+  - job_name: nginx-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: nginx
+          __path__: /var/log/nginx/*.log
+
+  - job_name: security-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: security
+          __path__: /var/log/security/*.log
+
+  - job_name: windows-eventlog
+    windows_events:
+      use_incoming_timestamp: false
+      bookmark_path: "./bookmark.xml"
+      poll_interval: 3s
+      eventlog_name: "Application"
+      xpath_query: '*[System[Provider[@Name="Django-GraphQL-Security"]]]'
+      labels:
+        job: windows-security
+        host: localhost

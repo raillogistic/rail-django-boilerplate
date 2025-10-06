@@ -1,0 +1,102 @@
+# Security-focused Docker Compose override for production
+# Usage: docker-compose -f docker-compose.production.yml -f docker-compose.security.yml up -d
+
+version: "3.9"
+
+services:
+  # Security scanner service
+  security-scanner:
+    image: aquasec/trivy:latest
+    restart: "no"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./security/trivy-cache:/root/.cache/trivy
+    command: ["image", "--exit-code", "1", "--severity", "HIGH,CRITICAL", "django-graphql-boilerplate_web"]
+    profiles:
+      - security-scan
+
+  # Fail2ban for intrusion prevention
+  fail2ban:
+    image: crazymax/fail2ban:latest
+    restart: unless-stopped
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./fail2ban/data:/data
+      - ./fail2ban/jail.local:/etc/fail2ban/jail.local:ro
+      - /var/log:/var/log:ro
+    environment:
+      TZ: ${TZ:-UTC}
+      F2B_LOG_LEVEL: INFO
+      F2B_DB_PURGE_AGE: 1d
+    profiles:
+      - security
+
+  # Log monitoring and alerting
+  log-monitor:
+    image: grafana/promtail:latest
+    restart: unless-stopped
+    volumes:
+      - /var/log:/var/log:ro
+      - ./monitoring/promtail.yml:/etc/promtail/config.yml:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - monitoring
+    user: "0:0"  # Needs root to read logs
+    profiles:
+      - monitoring
+
+  # Certificate management with Let's Encrypt
+  certbot:
+    image: certbot/certbot:latest
+    restart: "no"
+    volumes:
+      - ./ssl/certbot/conf:/etc/letsencrypt
+      - ./ssl/certbot/www:/var/www/certbot
+      - ./ssl/certbot/logs:/var/log/letsencrypt
+    command: certonly --webroot --webroot-path=/var/www/certbot --email ${SSL_EMAIL} --agree-tos --no-eff-email -d ${DOMAIN_NAME}
+    profiles:
+      - ssl-setup
+
+  # SSL certificate renewal
+  ssl-renew:
+    image: certbot/certbot:latest
+    restart: "no"
+    volumes:
+      - ./ssl/certbot/conf:/etc/letsencrypt
+      - ./ssl/certbot/www:/var/www/certbot
+      - ./ssl/certbot/logs:/var/log/letsencrypt
+    command: renew --webroot --webroot-path=/var/www/certbot
+    profiles:
+      - ssl-renew
+
+  # Security audit logging
+  audit-logger:
+    image: alpine:3.19
+    restart: unless-stopped
+    volumes:
+      - ./logs/audit:/var/log/audit
+      - ./scripts/audit-logger.sh:/usr/local/bin/audit-logger.sh:ro
+    command: ["/usr/local/bin/audit-logger.sh"]
+    networks:
+      - monitoring
+    user: "1000:1000"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    profiles:
+      - audit
+
+volumes:
+  trivy-cache:
+  fail2ban-data:
+  ssl-certs:
+  audit-logs:
+
+networks:
+  monitoring:
+    external: true
+    name: django-graphql-boilerplate_monitoring

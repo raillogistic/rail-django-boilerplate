@@ -6,4 +6,7 @@ django-cors-headers>=3.14
 psutil>=5.9
 django-environ>=0.11
 jwt==1.3.1
-# rail-django-graphql is provided locally in the monorepo; PYTHONPATH will include it.
+PyJWT==2.9.0
+pyotp==2.9.0
+qrcode==7.4.2
+rail-django-graphql>=1.0.0
