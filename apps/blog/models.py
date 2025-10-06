@@ -1,5 +1,10 @@
+from math import perm
+
 from django.conf import settings
 from django.db import models
+
+# import mutation decorator
+# from rail_django_graphql.core.decorators import mutation
 
 
 class Category(models.Model):
@@ -34,6 +39,12 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def test_prop(self):
+        return "ddd"
+
+    test_prop.fget.short_description = ""
 
 
 class Comment(models.Model):
