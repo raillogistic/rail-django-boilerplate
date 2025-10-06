@@ -12,11 +12,19 @@ env = environ.Env()
 DEBUG = env.bool("DJANGO_DEBUG", default=True)
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
-# GraphiQL and introspection
-RAIL_DJANGO_GRAPHQL["SECURITY"]["ENABLE_GRAPHIQL"] = env.bool(
+# GraphiQL and introspection (development overrides)
+RAIL_DJANGO_GRAPHQL["ENABLE_GRAPHIQL"] = env.bool(
     "ENABLE_GRAPHIQL", default=True
 )
-RAIL_DJANGO_GRAPHQL["SECURITY"]["ENABLE_INTROSPECTION"] = env.bool(
+RAIL_DJANGO_GRAPHQL["ENABLE_INTROSPECTION"] = env.bool(
+    "ENABLE_INTROSPECTION", default=True
+)
+
+# Override schema-specific settings for development
+RAIL_DJANGO_GRAPHQL["SCHEMAS"]["default"]["SCHEMA_SETTINGS"]["enable_graphiql"] = env.bool(
+    "ENABLE_GRAPHIQL", default=True
+)
+RAIL_DJANGO_GRAPHQL["SCHEMAS"]["default"]["SCHEMA_SETTINGS"]["enable_introspection"] = env.bool(
     "ENABLE_INTROSPECTION", default=True
 )
 

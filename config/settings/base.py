@@ -139,9 +139,16 @@ GRAPHENE = {
     ],
 }
 
-# Rail Django GraphQL Configuration (env-driven toggles)
+# Rail Django GraphQL Configuration (aligned with dataclass-based settings)
 
 RAIL_DJANGO_GRAPHQL = {
+    # Core schema configuration
+    "DEFAULT_SCHEMA": "default",
+    "ENABLE_GRAPHIQL": env.bool("ENABLE_GRAPHIQL", default=True),
+    "ENABLE_INTROSPECTION": env.bool("ENABLE_INTROSPECTION", default=True),
+    "AUTHENTICATION_REQUIRED": False,
+    "PERMISSION_CLASSES": [],
+    # Schema-specific configurations
     "SCHEMAS": {
         "default": {
             "MODELS": [
@@ -151,22 +158,62 @@ RAIL_DJANGO_GRAPHQL = {
                 "apps.blog.models.Tag",
                 "apps.blog.models.Comment",
             ],
-            "SCHEMA_OVERRIDES": {
-                "ENABLE_FILTERS": False,
-                "SCHEMA_SETTINGS": {
-                    "excluded_models": [
-                        "apps.users.models.User",
-                    ]
-                },
+            # Schema settings (aligned with SchemaSettings dataclass)
+            "SCHEMA_SETTINGS": {
+                "excluded_apps": ["blog"],
+                "excluded_models": [
+                    "Post",
+                    "apps.users.models.User",
+                ],
+                "enable_introspection": env.bool("ENABLE_INTROSPECTION", default=True),
+                "enable_graphiql": env.bool("ENABLE_GRAPHIQL", default=True),
+                "auto_refresh_on_model_change": True,
+                "enable_pagination": True,
+                "auto_camelcase": False,
             },
-            "ENABLE_MUTATIONS": True,
-            "ENABLE_FILTERS": False,
-            "ENABLE_PAGINATION": True,
-            "ENABLE_SUBSCRIPTIONS": False,
-            "MAX_PAGE_SIZE": 100,
-            "DEFAULT_PAGE_SIZE": 20,
+            # Query settings (aligned with QueryGeneratorSettings dataclass)
+            "QUERY_SETTINGS": {
+                "generate_filters": False,  # Explicitly disabled
+                "generate_ordering": True,
+                "generate_pagination": True,
+                "enable_pagination": True,
+                "enable_ordering": True,
+                "use_relay": False,
+                "default_page_size": 20,
+                "max_page_size": 100,
+                "additional_lookup_fields": {},
+            },
+            # Mutation settings (aligned with MutationGeneratorSettings dataclass)
+            "MUTATION_SETTINGS": {
+                "generate_create": True,
+                "generate_update": True,
+                "generate_delete": True,
+                "generate_bulk": False,
+                "enable_create": True,
+                "enable_update": True,
+                "enable_delete": True,
+                "enable_bulk_operations": False,
+                "enable_method_mutations": False,
+                "bulk_batch_size": 100,
+                "required_update_fields": {},
+                "enable_nested_relations": True,
+                "nested_relations_config": {},
+                "nested_field_config": {},
+            },
+            # Type generation settings (aligned with TypeGeneratorSettings dataclass)
+            "TYPE_GENERATION_SETTINGS": {
+                "exclude_fields": {},
+                "excluded_fields": {},
+                "include_fields": None,
+                "custom_field_mappings": {},
+                "generate_filters": False,  # Explicitly disabled
+                "enable_filtering": False,  # Explicitly disabled
+                "auto_camelcase": False,
+                "generate_descriptions": True,
+            },
         }
     },
+    # Legacy compatibility settings (deprecated but maintained for backward compatibility)
     "SECURITY": {
         "ENABLE_INTROSPECTION": env.bool("ENABLE_INTROSPECTION", default=True),
         "ENABLE_GRAPHIQL": env.bool("ENABLE_GRAPHIQL", default=True),

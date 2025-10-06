@@ -4,16 +4,11 @@ from rail_django_graphql.core.registry import schema_registry
 schema_registry.register_schema(
     name="blog",
     description="Blog content API",
-    models=[
-        "blog.Post",
-    ],
-    settings={
-        "authentication_required": False,
-        "enable_graphiql": True,
-        "QUERY_SETTINGS": {
-            "ENABLE_FILTERING": False,
-        },
-    },
+    # models=[
+    #     "blog.Post",
+    # ],
+    # apps=["blog"],
+    settings={},
     enabled=True,
 )
 
