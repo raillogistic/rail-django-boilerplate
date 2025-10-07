@@ -146,11 +146,12 @@ GRAPHENE = {
 
 # Rail Django GraphQL Configuration (aligned with dataclass-based settings)
 
+# RAIL_DJANGO_GRAPHQL = {}
 RAIL_DJANGO_GRAPHQL = {
     # Core schema configuration
     "DEFAULT_SCHEMA": "default",
     "ENABLE_GRAPHIQL": env.bool("ENABLE_GRAPHIQL", default=True),
-    "ENABLE_INTROSPECTION": env.bool("ENABLE_INTROSPECTION", default=True),
+    "enable_introspection": env.bool("enable_introspection", default=True),
     "AUTHENTICATION_REQUIRED": False,
     "PERMISSION_CLASSES": [],
     # Schema-specific configurations
@@ -164,20 +165,20 @@ RAIL_DJANGO_GRAPHQL = {
                 "apps.blog.models.Comment",
             ],
             # Schema settings (aligned with SchemaSettings dataclass)
-            "SCHEMA_SETTINGS": {
+            "schema_settings": {
                 "excluded_apps": ["blog"],
                 "excluded_models": [
                     "Post",
                     "apps.users.models.User",
                 ],
-                "enable_introspection": env.bool("ENABLE_INTROSPECTION", default=True),
+                "enable_introspection": env.bool("enable_introspection", default=True),
                 "enable_graphiql": env.bool("ENABLE_GRAPHIQL", default=True),
                 "auto_refresh_on_model_change": True,
                 "enable_pagination": True,
                 "auto_camelcase": False,
             },
             # Query settings (aligned with QueryGeneratorSettings dataclass)
-            "QUERY_SETTINGS": {
+            "query_settings": {
                 "generate_filters": False,  # Explicitly disabled
                 "generate_ordering": True,
                 "generate_pagination": True,
@@ -189,7 +190,7 @@ RAIL_DJANGO_GRAPHQL = {
                 "additional_lookup_fields": {},
             },
             # Mutation settings (aligned with MutationGeneratorSettings dataclass)
-            "MUTATION_SETTINGS": {
+            "mutation_settings": {
                 "generate_create": True,
                 "generate_update": True,
                 "generate_delete": True,
@@ -206,7 +207,7 @@ RAIL_DJANGO_GRAPHQL = {
                 "nested_field_config": {},
             },
             # Type generation settings (aligned with TypeGeneratorSettings dataclass)
-            "TYPE_GENERATION_SETTINGS": {
+            "type_generation_settings": {
                 "exclude_fields": {},
                 "excluded_fields": {},
                 "include_fields": None,
@@ -220,7 +221,7 @@ RAIL_DJANGO_GRAPHQL = {
     },
     # Legacy compatibility settings (deprecated but maintained for backward compatibility)
     "SECURITY": {
-        "ENABLE_INTROSPECTION": env.bool("ENABLE_INTROSPECTION", default=True),
+        "enable_introspection": env.bool("enable_introspection", default=True),
         "ENABLE_GRAPHIQL": env.bool("ENABLE_GRAPHIQL", default=True),
         "MAX_QUERY_DEPTH": env.int("GRAPHQL_MAX_QUERY_DEPTH", default=10),
         "MAX_QUERY_COMPLEXITY": env.int("GRAPHQL_MAX_QUERY_COMPLEXITY", default=1000),

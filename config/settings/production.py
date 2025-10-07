@@ -32,19 +32,17 @@ if _redis_url:
     }
 
 # Security toggles (production overrides)
-RAIL_DJANGO_GRAPHQL["ENABLE_GRAPHIQL"] = env.bool(
-    "ENABLE_GRAPHIQL", default=False
-)
-RAIL_DJANGO_GRAPHQL["ENABLE_INTROSPECTION"] = env.bool(
-    "ENABLE_INTROSPECTION", default=False
+RAIL_DJANGO_GRAPHQL["ENABLE_GRAPHIQL"] = env.bool("ENABLE_GRAPHIQL", default=False)
+RAIL_DJANGO_GRAPHQL["enable_introspection"] = env.bool(
+    "enable_introspection", default=False
 )
 
 # Override schema-specific settings for production
-RAIL_DJANGO_GRAPHQL["SCHEMAS"]["default"]["SCHEMA_SETTINGS"]["enable_graphiql"] = env.bool(
-    "ENABLE_GRAPHIQL", default=False
+RAIL_DJANGO_GRAPHQL["SCHEMAS"]["default"]["schema_settings"]["enable_graphiql"] = (
+    env.bool("ENABLE_GRAPHIQL", default=False)
 )
-RAIL_DJANGO_GRAPHQL["SCHEMAS"]["default"]["SCHEMA_SETTINGS"]["enable_introspection"] = env.bool(
-    "ENABLE_INTROSPECTION", default=False
+RAIL_DJANGO_GRAPHQL["SCHEMAS"]["default"]["schema_settings"]["enable_introspection"] = (
+    env.bool("enable_introspection", default=False)
 )
 
 STATIC_ROOT = Path(env("STATIC_ROOT", default="/app/static/"))

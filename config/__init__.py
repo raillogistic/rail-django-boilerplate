@@ -6,13 +6,13 @@ schema_registry.register_schema(
     name="blog",
     description="Blog content API",
     settings={
-        "MUTATION_SETTINGS": {
-            "generate_create": False,  # Enable create mutations
-            "generate_update": False,  # Enable update mutations
-            "generate_delete": False,  # Disable delete mutations
-            # "enable_method_mutations": False,  # Disable method-based mutations
-            # "generate_bulk": False,  # Disable bulk operations
-        }
+        "type_generation_settings": {"exclude_fields": {"Post": ["title"]}},
+        "query_settings": {"default_page_size": 20, "max_page_size": 100},
+        "mutation_settings": {
+            "enable_create": True,
+            "generate_update": False,
+            "generate_delete": False,
+        },
     },
     enabled=True,
 )
