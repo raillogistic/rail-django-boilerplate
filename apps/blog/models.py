@@ -23,6 +23,9 @@ class Tag(models.Model):
         return self.name
 
 
+from datetime import date
+
+
 class Post(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="posts"
@@ -34,15 +37,15 @@ class Post(models.Model):
         Category, on_delete=models.SET_NULL, null=True, related_name="posts"
     )
     tags = models.ManyToManyField(Tag, blank=True, related_name="posts")
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
 
     @property
-    def test_prop(self):
-        return "ddd"
+    def test_prop(self) -> date:
+        return
 
     test_prop.fget.short_description = ""
 

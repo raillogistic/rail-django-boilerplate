@@ -58,7 +58,7 @@ LOCAL_APPS = [
     "apps.blog",
 ]
 
-DISABLE_SECURITY_MUTATIONS = False
+disable_security_mutations = False
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -269,7 +269,9 @@ else:
 JWT_SECRET_KEY = env("JWT_SECRET_KEY", default=SECRET_KEY)
 JWT_ALGORITHM = env("JWT_ALGORITHM", default="HS256")
 JWT_ACCESS_TOKEN_LIFETIME = env.int("JWT_ACCESS_TOKEN_LIFETIME", default=3600)  # 1 hour
-JWT_REFRESH_TOKEN_LIFETIME = env.int("JWT_REFRESH_TOKEN_LIFETIME", default=86400)  # 24 hours
+JWT_REFRESH_TOKEN_LIFETIME = env.int(
+    "JWT_REFRESH_TOKEN_LIFETIME", default=86400
+)  # 24 hours
 JWT_ISSUER = env("JWT_ISSUER", default="django-graphql-boilerplate")
 JWT_AUDIENCE = env("JWT_AUDIENCE", default="django-graphql-api")
 
@@ -286,24 +288,32 @@ GRAPHQL_SECURITY = {
         "JWT_AUDIENCE": JWT_AUDIENCE,
         "REQUIRE_AUTHENTICATION": env.bool("GRAPHQL_REQUIRE_AUTH", default=False),
         "ANONYMOUS_QUERIES_ALLOWED": env.bool("GRAPHQL_ALLOW_ANONYMOUS", default=True),
-        "USER_CACHE_TIMEOUT": env.int("GRAPHQL_USER_CACHE_TIMEOUT", default=300),  # 5 minutes
+        "USER_CACHE_TIMEOUT": env.int(
+            "GRAPHQL_USER_CACHE_TIMEOUT", default=300
+        ),  # 5 minutes
     },
-    
     # Rate limiting settings
     "RATE_LIMITING": {
         "ENABLED": env.bool("GRAPHQL_RATE_LIMIT_ENABLED", default=True),
-        "ANONYMOUS_LIMIT": env.int("GRAPHQL_ANONYMOUS_RATE_LIMIT", default=100),  # per hour
-        "AUTHENTICATED_LIMIT": env.int("GRAPHQL_AUTH_RATE_LIMIT", default=1000),  # per hour
+        "ANONYMOUS_LIMIT": env.int(
+            "GRAPHQL_ANONYMOUS_RATE_LIMIT", default=100
+        ),  # per hour
+        "AUTHENTICATED_LIMIT": env.int(
+            "GRAPHQL_AUTH_RATE_LIMIT", default=1000
+        ),  # per hour
         "LOGIN_LIMIT": env.int("GRAPHQL_LOGIN_RATE_LIMIT", default=10),  # per hour
-        "CACHE_KEY_PREFIX": env("GRAPHQL_RATE_LIMIT_PREFIX", default="graphql_rate_limit"),
+        "CACHE_KEY_PREFIX": env(
+            "GRAPHQL_RATE_LIMIT_PREFIX", default="graphql_rate_limit"
+        ),
         "WINDOW_SIZE": env.int("GRAPHQL_RATE_LIMIT_WINDOW", default=3600),  # 1 hour
     },
-    
     # Security headers
     "SECURITY_HEADERS": {
         "ENABLE_CORS_HEADERS": env.bool("GRAPHQL_ENABLE_CORS", default=True),
         "ENABLE_CSP_HEADERS": env.bool("GRAPHQL_ENABLE_CSP", default=True),
-        "ENABLE_SECURITY_HEADERS": env.bool("GRAPHQL_ENABLE_SECURITY_HEADERS", default=True),
+        "ENABLE_SECURITY_HEADERS": env.bool(
+            "GRAPHQL_ENABLE_SECURITY_HEADERS", default=True
+        ),
     },
 }
 
@@ -312,7 +322,9 @@ MFA_CONFIG = {
     "ENABLED": env.bool("MFA_ENABLED", default=False),
     "TOTP_ISSUER": env("MFA_TOTP_ISSUER", default="Django GraphQL Boilerplate"),
     "BACKUP_CODES_COUNT": env.int("MFA_BACKUP_CODES_COUNT", default=10),
-    "TRUSTED_DEVICE_LIFETIME": env.int("MFA_TRUSTED_DEVICE_LIFETIME", default=2592000),  # 30 days
+    "TRUSTED_DEVICE_LIFETIME": env.int(
+        "MFA_TRUSTED_DEVICE_LIFETIME", default=2592000
+    ),  # 30 days
     "SMS_PROVIDER": env("MFA_SMS_PROVIDER", default=None),  # Optional SMS provider
     "SMS_CONFIG": {
         "API_KEY": env("MFA_SMS_API_KEY", default=None),
@@ -356,7 +368,7 @@ LOGGING = {
 # Security settings for production
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = 'DENY'
+X_FRAME_OPTIONS = "DENY"
 
 # Optional Email configuration
 _email_url = env("EMAIL_URL", default=None)

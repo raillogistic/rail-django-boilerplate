@@ -1,25 +1,21 @@
 # Schema registration moved to apps.py to avoid AppRegistryNotReady errors
-# from rail_django_graphql.core.registry import schema_registry
+from rail_django_graphql.core.registry import schema_registry
 
 # # Open blog schema
-# schema_registry.register_schema(
-#     name="blog",
-#     description="Blog content API",
-#     # models=[
-#     #     "blog.Post",
-#     # ],
-#     # apps=["blog"],
-#     settings={
-#         "MUTATION_SETTINGS": {
-#             "generate_create": True,  # Enable create mutations
-#             "generate_update": True,  # Enable update mutations
-#             "generate_delete": False,  # Disable delete mutations
-#             "enable_method_mutations": False,  # Disable method-based mutations
-#             "generate_bulk": False,  # Disable bulk operations
-#         }
-#     },
-#     enabled=True,
-# )
+schema_registry.register_schema(
+    name="blog",
+    description="Blog content API",
+    settings={
+        "MUTATION_SETTINGS": {
+            "generate_create": False,  # Enable create mutations
+            "generate_update": False,  # Enable update mutations
+            "generate_delete": False,  # Disable delete mutations
+            # "enable_method_mutations": False,  # Disable method-based mutations
+            # "generate_bulk": False,  # Disable bulk operations
+        }
+    },
+    enabled=True,
+)
 
 
 # # Closed authentication schema
@@ -31,7 +27,7 @@
 #     settings={
 #         "authentication_required": False,
 #         "enable_graphiql": True,
-#         "DISABLE_SECURITY_MUTATIONS": True,
+#         "disable_security_mutations": True,
 #     },
 #     enabled=True,
 # )
