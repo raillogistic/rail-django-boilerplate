@@ -152,7 +152,7 @@ RAIL_DJANGO_GRAPHQL = {
     "DEFAULT_SCHEMA": "default",
     "ENABLE_GRAPHIQL": env.bool("ENABLE_GRAPHIQL", default=True),
     "enable_introspection": env.bool("enable_introspection", default=True),
-    "AUTHENTICATION_REQUIRED": False,
+    "authentication_required": True,
     "PERMISSION_CLASSES": [],
     # Schema-specific configurations
     "SCHEMAS": {
