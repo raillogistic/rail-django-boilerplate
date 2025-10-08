@@ -75,7 +75,6 @@ MIDDLEWARE = [
     # Middlewares de sécurité GraphQL
     "rail_django_graphql.middleware.GraphQLAuthenticationMiddleware",
     "rail_django_graphql.middleware.GraphQLRateLimitMiddleware",
-    "rail_django_graphql.security.create_security_middleware",
 ]
 
 ROOT_URLCONF = "config.urls"
