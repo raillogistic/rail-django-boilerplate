@@ -10,3 +10,6 @@ PyJWT==2.9.0
 pyotp==2.9.0
 qrcode==7.4.2
 rail-django-graphql>=1.0.0
+django-extensions
+psycopg2==2.9.9
+psycopg2-binary==2.9.9
