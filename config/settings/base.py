@@ -47,8 +47,9 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "graphene_django",
     "corsheaders",
+    "graphene_django",
+    "django_extensions",
     "rail_django_graphql",
 ]
 
@@ -74,6 +75,7 @@ MIDDLEWARE = [
     # Middlewares de sécurité GraphQL
     "rail_django_graphql.middleware.GraphQLAuthenticationMiddleware",
     "rail_django_graphql.middleware.GraphQLRateLimitMiddleware",
+    "rail_django_graphql.security.create_security_middleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -98,7 +100,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 """Database configuration via DATABASE_URL"""
 DATABASES = {
-    "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+    # "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+    "default": env.db(
+        "DATABASE_URL",
+        default="postgresql://mkhaled:KhaledRM250@localhost:5432/boilerplate",
+    )
 }
 
 # Password validation
@@ -370,6 +376,28 @@ LOGGING = {
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
+
+# GraphQL Security Configuration
+GRAPHQL_SECURITY = {
+    'MAX_QUERY_DEPTH': env.int('GRAPHQL_MAX_QUERY_DEPTH', default=7),
+    'MAX_QUERY_COMPLEXITY': env.int('GRAPHQL_MAX_QUERY_COMPLEXITY', default=100),
+    'ENABLE_INTROSPECTION': env.bool('GRAPHQL_ENABLE_INTROSPECTION', default=DEBUG),
+    'QUERY_TIMEOUT': env.int('GRAPHQL_QUERY_TIMEOUT', default=10),
+    'RATE_LIMIT_PER_MINUTE': env.int('GRAPHQL_RATE_LIMIT_PER_MINUTE', default=60),
+    'ENABLE_INPUT_VALIDATION': env.bool('GRAPHQL_ENABLE_INPUT_VALIDATION', default=True),
+    'ENABLE_FIELD_ENCRYPTION': env.bool('GRAPHQL_ENABLE_FIELD_ENCRYPTION', default=True),
+    'ENABLE_AUDIT_LOGGING': env.bool('GRAPHQL_ENABLE_AUDIT_LOGGING', default=True),
+    'ENABLE_RBAC': env.bool('GRAPHQL_ENABLE_RBAC', default=True),
+    'SENSITIVE_FIELDS': env.list('GRAPHQL_SENSITIVE_FIELDS', default=[
+        'password', 'email', 'phone', 'ssn', 'credit_card', 'bank_account'
+    ]),
+    'ENCRYPTION_KEY': env('GRAPHQL_ENCRYPTION_KEY', default=SECRET_KEY[:32]),
+    'SECURITY_MONITORING': {
+        'ENABLE_ALERTS': env.bool('GRAPHQL_ENABLE_SECURITY_ALERTS', default=True),
+        'ALERT_WEBHOOK': env('GRAPHQL_ALERT_WEBHOOK', default=None),
+        'THREAT_DETECTION': env.bool('GRAPHQL_THREAT_DETECTION', default=True),
+    }
+}
 
 # Optional Email configuration
 _email_url = env("EMAIL_URL", default=None)
