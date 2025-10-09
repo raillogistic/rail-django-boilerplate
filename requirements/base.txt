@@ -13,3 +13,4 @@ rail-django-graphql>=1.0.0
 django-extensions
 psycopg2==2.9.9
 psycopg2-binary==2.9.9
+openpyxl

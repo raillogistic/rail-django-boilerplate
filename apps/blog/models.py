@@ -1,6 +1,7 @@
 from datetime import date, datetime, timedelta
 from math import perm
 from multiprocessing import managers
+from tabnanny import verbose
 
 from django.conf import settings
 from django.db import models
@@ -29,7 +30,7 @@ from .security import BlogRoles, FieldAccessLevel, encrypt_sensitive_field, secu
     }
 )
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name="Nom du category")
     slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
@@ -249,10 +250,10 @@ class Post(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="posts"
     )
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
-    content = models.TextField(blank=True)
-    excerpt = models.TextField(max_length=500, blank=True)
+    title = models.CharField(max_length=200, verbose_name="Titre")
+    slug = models.SlugField(unique=True, verbose_name="Slug")
+    content = models.TextField(blank=True, verbose_name="Contenu")
+    excerpt = models.TextField(max_length=500, blank=True, verbose_name="Extrait")
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, related_name="posts"
     )
@@ -269,7 +270,7 @@ class Post(models.Model):
     featured_image = models.URLField(blank=True)
     is_featured = models.BooleanField(default=False)
     view_count = models.PositiveIntegerField(default=0)
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True, verbose_name="Créer le")
     updated_at = models.DateTimeField(auto_now=True)
     published_at = models.DateTimeField(null=True, blank=True)
     objects = models.Manager()

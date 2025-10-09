@@ -17,6 +17,7 @@ from rail_django_graphql.views.graphql_views import (
 )
 
 urlpatterns = [
+    path("api/", include("rail_django_graphql.extensions.urls")),
     path("admin/", admin.site.urls),
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
     # GraphQL endpoint (library view)
