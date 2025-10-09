@@ -36,13 +36,18 @@ class PostType(DjangoObjectType):
     class Meta:
         model = Post
         fields = "__all__"
+        # Standard filter fields without the quick filter
         filter_fields = {
-            'title': ['exact', 'icontains'],
-            'status': ['exact'],
-            'category': ['exact'],
-            'tags': ['exact'],
+            'title': ['exact', 'icontains', 'startswith'],
+            'status': ['exact', 'in'],
             'is_featured': ['exact'],
-            'created_at': ['gte', 'lte'],
+            'created_at': ['exact', 'gt', 'gte', 'lt', 'lte', 'range'],
+            'updated_at': ['exact', 'gt', 'gte', 'lt', 'lte', 'range'],
+            'published_at': ['exact', 'gt', 'gte', 'lt', 'lte', 'range'],
+            'author': ['exact'],
+            'category': ['exact', 'in'],
+            'tags': ['exact', 'in'],
+            'view_count': ['exact', 'gt', 'gte', 'lt', 'lte', 'range'],
         }
         interfaces = (graphene.relay.Node,)
 
@@ -84,7 +89,7 @@ class Query(graphene.ObjectType):
     tag = graphene.relay.Node.Field(TagType)
     
     # Posts
-    posts = DjangoFilterConnectionField(PostType)
+    posts = DjangoFilterConnectionField(PostType, quick=graphene.String())
     post = graphene.relay.Node.Field(PostType)
     featured_posts = DjangoFilterConnectionField(PostType)
     
@@ -100,13 +105,35 @@ class Query(graphene.ObjectType):
     blog_settings = graphene.Field(BlogSettingsType)
 
     def resolve_posts(self, info, **kwargs):
-        """Resolve posts with security filtering."""
+        """Resolve posts with security filtering and quick filter support."""
         user = info.context.user
         queryset = Post.objects.all()
         
         # Anonymous users can only see published posts
         if user.is_anonymous:
             queryset = queryset.filter(status='published')
+        
+        # Handle quick filter
+        quick_search = kwargs.get('quick')
+        if quick_search:
+            from django.db.models import Q
+            # Search across multiple fields
+            q_objects = Q()
+            search_fields = [
+                'title__icontains',
+                'content__icontains', 
+                'excerpt__icontains',
+                'author__username__icontains',
+                'author__first_name__icontains',
+                'author__last_name__icontains',
+                'category__name__icontains',
+                'tags__name__icontains'
+            ]
+            
+            for field in search_fields:
+                q_objects |= Q(**{field: quick_search})
+            
+            queryset = queryset.filter(q_objects).distinct()
         
         return queryset
 
