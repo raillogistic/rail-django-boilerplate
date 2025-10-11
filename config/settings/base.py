@@ -65,6 +65,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    "rail_django_graphql.middleware.GraphQLAuthenticationMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -73,7 +74,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Middlewares de sécurité GraphQL
-    "rail_django_graphql.middleware.GraphQLAuthenticationMiddleware",
     "rail_django_graphql.middleware.GraphQLRateLimitMiddleware",
 ]
 
@@ -274,7 +274,9 @@ else:
 # JWT Authentication Configuration
 JWT_SECRET_KEY = env("JWT_SECRET_KEY", default=SECRET_KEY)
 JWT_ALGORITHM = env("JWT_ALGORITHM", default="HS256")
-JWT_ACCESS_TOKEN_LIFETIME = env.int("JWT_ACCESS_TOKEN_LIFETIME", default=3600)  # 1 hour
+JWT_ACCESS_TOKEN_LIFETIME = env.int(
+    "JWT_ACCESS_TOKEN_LIFETIME", default=1
+)  # 0 = never expires
 JWT_REFRESH_TOKEN_LIFETIME = env.int(
     "JWT_REFRESH_TOKEN_LIFETIME", default=86400
 )  # 24 hours
@@ -378,24 +380,29 @@ X_FRAME_OPTIONS = "DENY"
 
 # GraphQL Security Configuration
 GRAPHQL_SECURITY = {
-    'MAX_QUERY_DEPTH': env.int('GRAPHQL_MAX_QUERY_DEPTH', default=7),
-    'MAX_QUERY_COMPLEXITY': env.int('GRAPHQL_MAX_QUERY_COMPLEXITY', default=100),
-    'ENABLE_INTROSPECTION': env.bool('GRAPHQL_ENABLE_INTROSPECTION', default=DEBUG),
-    'QUERY_TIMEOUT': env.int('GRAPHQL_QUERY_TIMEOUT', default=10),
-    'RATE_LIMIT_PER_MINUTE': env.int('GRAPHQL_RATE_LIMIT_PER_MINUTE', default=60),
-    'ENABLE_INPUT_VALIDATION': env.bool('GRAPHQL_ENABLE_INPUT_VALIDATION', default=True),
-    'ENABLE_FIELD_ENCRYPTION': env.bool('GRAPHQL_ENABLE_FIELD_ENCRYPTION', default=True),
-    'ENABLE_AUDIT_LOGGING': env.bool('GRAPHQL_ENABLE_AUDIT_LOGGING', default=True),
-    'ENABLE_RBAC': env.bool('GRAPHQL_ENABLE_RBAC', default=True),
-    'SENSITIVE_FIELDS': env.list('GRAPHQL_SENSITIVE_FIELDS', default=[
-        'password', 'email', 'phone', 'ssn', 'credit_card', 'bank_account'
-    ]),
-    'ENCRYPTION_KEY': env('GRAPHQL_ENCRYPTION_KEY', default=SECRET_KEY[:32]),
-    'SECURITY_MONITORING': {
-        'ENABLE_ALERTS': env.bool('GRAPHQL_ENABLE_SECURITY_ALERTS', default=True),
-        'ALERT_WEBHOOK': env('GRAPHQL_ALERT_WEBHOOK', default=None),
-        'THREAT_DETECTION': env.bool('GRAPHQL_THREAT_DETECTION', default=True),
-    }
+    "MAX_QUERY_DEPTH": env.int("GRAPHQL_MAX_QUERY_DEPTH", default=7),
+    "MAX_QUERY_COMPLEXITY": env.int("GRAPHQL_MAX_QUERY_COMPLEXITY", default=100),
+    "ENABLE_INTROSPECTION": env.bool("GRAPHQL_ENABLE_INTROSPECTION", default=DEBUG),
+    "QUERY_TIMEOUT": env.int("GRAPHQL_QUERY_TIMEOUT", default=10),
+    "RATE_LIMIT_PER_MINUTE": env.int("GRAPHQL_RATE_LIMIT_PER_MINUTE", default=60),
+    "ENABLE_INPUT_VALIDATION": env.bool(
+        "GRAPHQL_ENABLE_INPUT_VALIDATION", default=True
+    ),
+    "ENABLE_FIELD_ENCRYPTION": env.bool(
+        "GRAPHQL_ENABLE_FIELD_ENCRYPTION", default=True
+    ),
+    "ENABLE_AUDIT_LOGGING": env.bool("GRAPHQL_ENABLE_AUDIT_LOGGING", default=True),
+    "ENABLE_RBAC": env.bool("GRAPHQL_ENABLE_RBAC", default=True),
+    "SENSITIVE_FIELDS": env.list(
+        "GRAPHQL_SENSITIVE_FIELDS",
+        default=["password", "email", "phone", "ssn", "credit_card", "bank_account"],
+    ),
+    "ENCRYPTION_KEY": env("GRAPHQL_ENCRYPTION_KEY", default=SECRET_KEY[:32]),
+    "SECURITY_MONITORING": {
+        "ENABLE_ALERTS": env.bool("GRAPHQL_ENABLE_SECURITY_ALERTS", default=True),
+        "ALERT_WEBHOOK": env("GRAPHQL_ALERT_WEBHOOK", default=None),
+        "THREAT_DETECTION": env.bool("GRAPHQL_THREAT_DETECTION", default=True),
+    },
 }
 
 # Optional Email configuration

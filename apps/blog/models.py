@@ -255,7 +255,11 @@ class Post(models.Model):
     content = models.TextField(blank=True, verbose_name="Contenu")
     excerpt = models.TextField(max_length=500, blank=True, verbose_name="Extrait")
     category = models.ForeignKey(
-        Category, on_delete=models.SET_NULL, null=True, related_name="posts"
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="posts",
+        verbose_name="Catégorie",
     )
     tags = models.ManyToManyField(Tag, blank=True, related_name="posts")
     status = models.CharField(
@@ -275,6 +279,14 @@ class Post(models.Model):
     published_at = models.DateTimeField(null=True, blank=True)
     objects = models.Manager()
     published = PublishedManager()
+
+    language = models.CharField(
+        choices=[("en", "English"), ("fr", "French")],
+        max_length=100,
+        null=True,
+        blank=True,
+        verbose_name="Language",
+    )
 
     class Meta:
         ordering = ["-created_at"]

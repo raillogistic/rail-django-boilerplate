@@ -27,6 +27,8 @@ class AuditEventModel(models.Model):
     request_method = models.CharField(max_length=10)
     additional_data = models.JSONField(null=True, blank=True)
     session_id = models.CharField(max_length=100, null=True, blank=True)
+    success = models.BooleanField(default=True, db_index=True)
+    error_message = models.TextField(null=True, blank=True)
     
     class Meta:
         app_label = 'core'
