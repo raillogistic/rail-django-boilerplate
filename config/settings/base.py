@@ -164,16 +164,16 @@ RAIL_DJANGO_GRAPHQL = {
         "default": {
             "MODELS": [
                 # 'apps.users.models.User',
-                # 'apps.blog.models.Post',
+                'apps.blog.models.Post',  # Enable Post model
                 "apps.blog.models.Category",
                 "apps.blog.models.Tag",
                 "apps.blog.models.Comment",
             ],
             # Schema settings (aligned with SchemaSettings dataclass)
             "schema_settings": {
-                "excluded_apps": ["blog"],
+                "excluded_apps": [],  # Remove blog from excluded apps
                 "excluded_models": [
-                    "Post",
+                    # "Post",  # Remove Post from excluded models
                     "apps.users.models.User",
                 ],
                 "enable_introspection": env.bool("enable_introspection", default=True),
@@ -181,6 +181,7 @@ RAIL_DJANGO_GRAPHQL = {
                 "auto_refresh_on_model_change": True,
                 "enable_pagination": True,
                 "auto_camelcase": False,
+                "show_metadata": True,  # Enable metadata functionality
             },
             # Query settings (aligned with QueryGeneratorSettings dataclass)
             "query_settings": {

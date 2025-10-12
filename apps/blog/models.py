@@ -280,14 +280,6 @@ class Post(models.Model):
     objects = models.Manager()
     published = PublishedManager()
 
-    language = models.CharField(
-        choices=[("en", "English"), ("fr", "French")],
-        max_length=100,
-        null=True,
-        blank=True,
-        verbose_name="Language",
-    )
-
     class Meta:
         ordering = ["-created_at"]
 
