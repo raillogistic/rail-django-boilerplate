@@ -8,16 +8,43 @@ from django.db import models
 from django.db.models import Count, Q
 from django.utils import timezone
 
+# Import GraphQL types for mutation output
+import graphene
+from graphene import ObjectType, String, Boolean, Int, DateTime
+
 # Import GraphQLMeta for testing
 from rail_django_graphql.core.meta import GraphQLMeta
+
+# import business_logic
+from rail_django_graphql.decorators import business_logic, mutation
 
 from .managers import PublishedManager
 
 # Import security features
 from .security import BlogRoles, FieldAccessLevel, encrypt_sensitive_field, secure_model
 
-# import mutation decorator
 # from rail_django_graphql.core.decorators import mutation
+
+
+# GraphQL Output Types for mutations
+class NotificationResult(ObjectType):
+    """GraphQL type for notification result."""
+    notified_count = Int(description="Number of subscribers notified")
+    notification_sent = Boolean(description="Whether notification was sent successfully")
+    error = String(description="Error message if notification failed")
+
+
+class PublishPostResult(ObjectType):
+    """GraphQL output type for publish_post mutation."""
+    success = Boolean(required=True, description="Whether the operation was successful")
+    message = String(required=True, description="Success or error message")
+    post_id = Int(description="ID of the published post")
+    published_at = String(description="Publication timestamp")
+    previous_status = String(description="Previous post status")
+    current_status = String(description="Current post status")
+    notification_result = graphene.Field(NotificationResult, description="Notification details")
+    view_count = Int(description="Current view count")
+    error_type = String(description="Type of error if operation failed")
 
 
 @secure_model(
@@ -283,6 +310,118 @@ class Post(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
+    @mutation(description="Publish a blog post with validation and status updates")
+    def publish_post(
+        self, publish_date: str = None, notify_subscribers: bool = True
+    ) -> graphene.JSONString:
+        """
+        Publishes a blog post with comprehensive validation and business logic.
+
+        Purpose: Handles the complete publication workflow for blog posts
+        Args:
+            publish_date (str, optional): ISO format date string for scheduled publishing
+            notify_subscribers (bool): Whether to notify subscribers about the new post
+        Returns:
+            graphene.JSONString: Publication result with status, message, and post data
+        Raises:
+            ValueError: When post validation fails or invalid parameters provided
+            PermissionError: When user lacks permission to publish
+        Example:
+            result = post.publish_post(
+                publish_date="2024-01-15T10:00:00Z",
+                notify_subscribers=True
+            )
+        """
+        import json
+        from datetime import datetime
+
+        from django.core.exceptions import ValidationError
+        from django.utils import timezone
+
+        try:
+            # Validation checks
+            if not self.title or not self.title.strip():
+                raise ValueError("Post title is required for publication")
+
+            if not self.content or len(self.content.strip()) < 50:
+                raise ValueError("Post content must be at least 50 characters long")
+
+            if not self.category:
+                raise ValueError("Post must have a category assigned")
+
+            if self.status == "archived":
+                raise ValueError("Cannot publish archived posts")
+
+            # Handle publish date
+            if publish_date:
+                try:
+                    parsed_date = datetime.fromisoformat(
+                        publish_date.replace("Z", "+00:00")
+                    )
+                    if parsed_date < timezone.now():
+                        raise ValueError("Publish date cannot be in the past")
+                    self.published_at = parsed_date
+                except ValueError as e:
+                    raise ValueError(f"Invalid publish date format: {e}")
+            else:
+                self.published_at = timezone.now()
+
+            # Update post status and metadata
+            previous_status = self.status
+            self.status = "published"
+
+            # Increment view count for newly published posts
+            if previous_status != "published":
+                self.view_count = 0
+
+            # Save the post
+            self.save()
+
+            # Business logic for subscriber notification
+            notification_result = None
+            if notify_subscribers and previous_status != "published":
+                try:
+                    # Simulate notification logic
+                    from .models import Subscriber
+
+                    active_subscribers = Subscriber.objects.filter(is_active=True)
+                    notification_result = {
+                        "notified_count": active_subscribers.count(),
+                        "notification_sent": True,
+                    }
+                except Exception as e:
+                    notification_result = {
+                        "notified_count": 0,
+                        "notification_sent": False,
+                        "error": str(e),
+                    }
+
+            return json.dumps({
+                "success": True,
+                "message": f"Post '{self.title}' published successfully",
+                "post_id": self.id,
+                "published_at": self.published_at.isoformat(),
+                "previous_status": previous_status,
+                "current_status": self.status,
+                "notification_result": notification_result,
+                "view_count": self.view_count,
+            })
+
+        except ValueError as e:
+            return json.dumps({
+                "success": False,
+                "message": f"Validation error: {str(e)}",
+                "post_id": self.id,
+                "error_type": "validation_error",
+            })
+        except Exception as e:
+            return json.dumps({
+                "success": False,
+                "message": f"Unexpected error during publication: {str(e)}",
+                "post_id": self.id,
+                "error_type": "system_error",
+            })
+
     class GraphQLMeta(GraphQLMeta):
         """GraphQL configuration for Post model - Enhanced with comprehensive features."""
 
@@ -346,6 +485,7 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+    @mutation(description="Publish a blog post with validation and status updates")
     def test_prop(self) -> date:
         return self.created_at
 

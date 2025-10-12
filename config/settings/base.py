@@ -164,7 +164,7 @@ RAIL_DJANGO_GRAPHQL = {
         "default": {
             "MODELS": [
                 # 'apps.users.models.User',
-                'apps.blog.models.Post',  # Enable Post model
+                "apps.blog.models.Post",  # Enable Post model
                 "apps.blog.models.Category",
                 "apps.blog.models.Tag",
                 "apps.blog.models.Comment",
@@ -205,7 +205,7 @@ RAIL_DJANGO_GRAPHQL = {
                 "enable_update": True,
                 "enable_delete": True,
                 "enable_bulk_operations": False,
-                "enable_method_mutations": False,
+                "enable_method_mutations": True,
                 "bulk_batch_size": 100,
                 "required_update_fields": {},
                 "enable_nested_relations": True,
