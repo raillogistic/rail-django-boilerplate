@@ -3,14 +3,13 @@ from math import perm
 from multiprocessing import managers
 from tabnanny import verbose
 
+# Import GraphQL types for mutation output
+import graphene
 from django.conf import settings
 from django.db import models
 from django.db.models import Count, Q
 from django.utils import timezone
-
-# Import GraphQL types for mutation output
-import graphene
-from graphene import ObjectType, String, Boolean, Int, DateTime
+from graphene import Boolean, DateTime, Int, ObjectType, String
 
 # Import GraphQLMeta for testing
 from rail_django_graphql.core.meta import GraphQLMeta
@@ -29,20 +28,26 @@ from .security import BlogRoles, FieldAccessLevel, encrypt_sensitive_field, secu
 # GraphQL Output Types for mutations
 class NotificationResult(ObjectType):
     """GraphQL type for notification result."""
+
     notified_count = Int(description="Number of subscribers notified")
-    notification_sent = Boolean(description="Whether notification was sent successfully")
+    notification_sent = Boolean(
+        description="Whether notification was sent successfully"
+    )
     error = String(description="Error message if notification failed")
 
 
 class PublishPostResult(ObjectType):
     """GraphQL output type for publish_post mutation."""
+
     success = Boolean(required=True, description="Whether the operation was successful")
     message = String(required=True, description="Success or error message")
     post_id = Int(description="ID of the published post")
     published_at = String(description="Publication timestamp")
     previous_status = String(description="Previous post status")
     current_status = String(description="Current post status")
-    notification_result = graphene.Field(NotificationResult, description="Notification details")
+    notification_result = graphene.Field(
+        NotificationResult, description="Notification details"
+    )
     view_count = Int(description="Current view count")
     error_type = String(description="Type of error if operation failed")
 
@@ -277,8 +282,14 @@ class Post(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="posts"
     )
+
     title = models.CharField(max_length=200, verbose_name="Titre")
-    slug = models.SlugField(unique=True, verbose_name="Slug")
+
+    slug = models.SlugField(
+        unique=True,
+        verbose_name="Slug",
+    )
+
     content = models.TextField(blank=True, verbose_name="Contenu")
     excerpt = models.TextField(max_length=500, blank=True, verbose_name="Extrait")
     category = models.ForeignKey(
@@ -396,31 +407,37 @@ class Post(models.Model):
                         "error": str(e),
                     }
 
-            return json.dumps({
-                "success": True,
-                "message": f"Post '{self.title}' published successfully",
-                "post_id": self.id,
-                "published_at": self.published_at.isoformat(),
-                "previous_status": previous_status,
-                "current_status": self.status,
-                "notification_result": notification_result,
-                "view_count": self.view_count,
-            })
+            return json.dumps(
+                {
+                    "success": True,
+                    "message": f"Post '{self.title}' published successfully",
+                    "post_id": self.id,
+                    "published_at": self.published_at.isoformat(),
+                    "previous_status": previous_status,
+                    "current_status": self.status,
+                    "notification_result": notification_result,
+                    "view_count": self.view_count,
+                }
+            )
 
         except ValueError as e:
-            return json.dumps({
-                "success": False,
-                "message": f"Validation error: {str(e)}",
-                "post_id": self.id,
-                "error_type": "validation_error",
-            })
+            return json.dumps(
+                {
+                    "success": False,
+                    "message": f"Validation error: {str(e)}",
+                    "post_id": self.id,
+                    "error_type": "validation_error",
+                }
+            )
         except Exception as e:
-            return json.dumps({
-                "success": False,
-                "message": f"Unexpected error during publication: {str(e)}",
-                "post_id": self.id,
-                "error_type": "system_error",
-            })
+            return json.dumps(
+                {
+                    "success": False,
+                    "message": f"Unexpected error during publication: {str(e)}",
+                    "post_id": self.id,
+                    "error_type": "system_error",
+                }
+            )
 
     class GraphQLMeta(GraphQLMeta):
         """GraphQL configuration for Post model - Enhanced with comprehensive features."""
