@@ -13,7 +13,7 @@ schema_registry.register_schema(
             "disable_security_mutations": False,
             "show_metadata": True,
         },
-        "type_generation_settings": {"exclude_fields": {"Post": ["title"]}},
+        "type_generation_settings": {},
         "query_settings": {"default_page_size": 20, "max_page_size": 100},
         "mutation_settings": {
             "enable_create": True,
@@ -24,7 +24,6 @@ schema_registry.register_schema(
     enabled=True,
 )
 
-
 # # Closed authentication schema
 schema_registry.register_schema(
     name="auth",
@@ -32,7 +31,6 @@ schema_registry.register_schema(
     models=["auth.User", "auth.Group"],
     exclude_models=["auth.Permission"],  # Exclude specific models
     settings={
-        "authentication_required": False,
         "enable_graphiql": True,
         "schema_settings": {
             "disable_security_mutations": False,
