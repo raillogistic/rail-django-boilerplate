@@ -67,10 +67,10 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "rail_django_graphql.middleware.GraphQLAuthenticationMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "rail_django_graphql.middleware.GraphQLAuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Middlewares de sécurité GraphQL
@@ -157,11 +157,13 @@ RAIL_DJANGO_GRAPHQL = {
     "DEFAULT_SCHEMA": "default",
     "ENABLE_GRAPHIQL": env.bool("ENABLE_GRAPHIQL", default=True),
     "enable_introspection": env.bool("enable_introspection", default=True),
-    "authentication_required": True,
     "PERMISSION_CLASSES": [],
+    "authentication_required": True,
     # Schema-specific configurations
     "SCHEMAS": {
+        "authentication_required": True,
         "default": {
+            "authentication_required": True,
             "MODELS": [
                 # 'apps.users.models.User',
                 "apps.blog.models.Post",  # Enable Post model
@@ -171,6 +173,7 @@ RAIL_DJANGO_GRAPHQL = {
             ],
             # Schema settings (aligned with SchemaSettings dataclass)
             "schema_settings": {
+                "authentication_required": True,
                 "excluded_apps": [],  # Remove blog from excluded apps
                 "excluded_models": [
                     # "Post",  # Remove Post from excluded models
@@ -223,7 +226,7 @@ RAIL_DJANGO_GRAPHQL = {
                 "auto_camelcase": False,
                 "generate_descriptions": True,
             },
-        }
+        },
     },
     # Legacy compatibility settings (deprecated but maintained for backward compatibility)
     "SECURITY": {
@@ -239,12 +242,13 @@ RAIL_DJANGO_GRAPHQL = {
     },
 }
 
+APPEND_SLASH = True
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = env.list(
     "CORS_ALLOWED_ORIGINS",
     default=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
     ],
 )
 
@@ -276,8 +280,8 @@ else:
 JWT_SECRET_KEY = env("JWT_SECRET_KEY", default=SECRET_KEY)
 JWT_ALGORITHM = env("JWT_ALGORITHM", default="HS256")
 JWT_ACCESS_TOKEN_LIFETIME = env.int(
-    "JWT_ACCESS_TOKEN_LIFETIME", default=1
-)  # 0 = never expires
+    "JWT_ACCESS_TOKEN_LIFETIME", default=3600
+)  # seconds (set to 0 to never expire)
 JWT_REFRESH_TOKEN_LIFETIME = env.int(
     "JWT_REFRESH_TOKEN_LIFETIME", default=86400
 )  # 24 hours
@@ -379,32 +383,8 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 
-# GraphQL Security Configuration
-GRAPHQL_SECURITY = {
-    "MAX_QUERY_DEPTH": env.int("GRAPHQL_MAX_QUERY_DEPTH", default=7),
-    "MAX_QUERY_COMPLEXITY": env.int("GRAPHQL_MAX_QUERY_COMPLEXITY", default=100),
-    "ENABLE_INTROSPECTION": env.bool("GRAPHQL_ENABLE_INTROSPECTION", default=DEBUG),
-    "QUERY_TIMEOUT": env.int("GRAPHQL_QUERY_TIMEOUT", default=10),
-    "RATE_LIMIT_PER_MINUTE": env.int("GRAPHQL_RATE_LIMIT_PER_MINUTE", default=60),
-    "ENABLE_INPUT_VALIDATION": env.bool(
-        "GRAPHQL_ENABLE_INPUT_VALIDATION", default=True
-    ),
-    "ENABLE_FIELD_ENCRYPTION": env.bool(
-        "GRAPHQL_ENABLE_FIELD_ENCRYPTION", default=True
-    ),
-    "ENABLE_AUDIT_LOGGING": env.bool("GRAPHQL_ENABLE_AUDIT_LOGGING", default=True),
-    "ENABLE_RBAC": env.bool("GRAPHQL_ENABLE_RBAC", default=True),
-    "SENSITIVE_FIELDS": env.list(
-        "GRAPHQL_SENSITIVE_FIELDS",
-        default=["password", "email", "phone", "ssn", "credit_card", "bank_account"],
-    ),
-    "ENCRYPTION_KEY": env("GRAPHQL_ENCRYPTION_KEY", default=SECRET_KEY[:32]),
-    "SECURITY_MONITORING": {
-        "ENABLE_ALERTS": env.bool("GRAPHQL_ENABLE_SECURITY_ALERTS", default=True),
-        "ALERT_WEBHOOK": env("GRAPHQL_ALERT_WEBHOOK", default=None),
-        "THREAT_DETECTION": env.bool("GRAPHQL_THREAT_DETECTION", default=True),
-    },
-}
+# GraphQL Security Configuration (merged into previous GRAPHQL_SECURITY with AUTHENTICATION)
+# NOTE: Removed duplicate override to preserve AUTHENTICATION settings used by GraphQLAuthenticationMiddleware.
 
 # Optional Email configuration
 _email_url = env("EMAIL_URL", default=None)

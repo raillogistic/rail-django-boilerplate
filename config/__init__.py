@@ -6,9 +6,9 @@ schema_registry.register_schema(
     name="blog",
     description="Blog content API",
     settings={
-        # "authentication_required": True,
         # "disable_security_mutations": True,
         # "show_metadata": True,
+        "authentication_required": True,
         "schema_settings": {
             "disable_security_mutations": False,
             "show_metadata": True,
@@ -32,6 +32,7 @@ schema_registry.register_schema(
     exclude_models=["auth.Permission"],  # Exclude specific models
     settings={
         "enable_graphiql": True,
+        "authentication_required": False,
         "schema_settings": {
             "disable_security_mutations": False,
         },
