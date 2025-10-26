@@ -247,7 +247,11 @@ APPEND_SLASH = True
 CORS_ALLOWED_ORIGINS = env.list(
     "CORS_ALLOWED_ORIGINS",
     default=[
+        "http://localhost:5176",
         "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "http://localhost:5175",
         "http://127.0.0.1:5173",
     ],
 )
@@ -283,7 +287,8 @@ JWT_ACCESS_TOKEN_LIFETIME = env.int(
     "JWT_ACCESS_TOKEN_LIFETIME", default=3600
 )  # seconds (set to 0 to never expire)
 JWT_REFRESH_TOKEN_LIFETIME = env.int(
-    "JWT_REFRESH_TOKEN_LIFETIME", default=86400
+    "JWT_REFRESH_TOKEN_LIFETIME",
+    default=86400 * 7,  # 7 days
 )  # 24 hours
 JWT_ISSUER = env("JWT_ISSUER", default="django-graphql-boilerplate")
 JWT_AUDIENCE = env("JWT_AUDIENCE", default="django-graphql-api")
